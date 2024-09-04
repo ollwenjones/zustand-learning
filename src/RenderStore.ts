@@ -1,40 +1,68 @@
-import {produce} from 'immer';
+import { produce } from 'immer';
 import create from 'zustand';
 
 type RenderStoreState = {
   count: number;
   dos: { count: number };
-  increment: () => void;
-  decrement: () => void;
-  increment2: () => void;
-  decrement2: () => void;
   people: ReturnType<typeof getPeople>;
   notes: string;
-  setNotes: (value:string) => void;
+  actions: {
+    setNotes: (value: string) => void;
+    increment: () => void;
+    decrement: () => void;
+    increment2: () => void;
+    decrement2: () => void;
+  };
 };
 
-export const useRenderStore = create<RenderStoreState>((set) => ({
+export const useRenderStore = create<RenderStoreState>((set, get) => ({
   count: 0,
   dos: { count: 0 },
-  increment: () => set((state) => ({ count: state.count + 1 })),
-  decrement: () => set((state) => ({ count: state.count - 1 })),
-  increment2: () =>
-    set(
-      produce((state) => {
-        state.count += 1;
-        state.dos.count += 1;
-      })
-    ),
-  decrement2: () => set(produce((state) => ({ count2: state.count2 - 1 }))),
   people: getPeople(),
   notes: '',
-  setNotes: (notes) => set({ notes }),
+  actions: {
+    increment: () => set((state) => ({ count: state.count + 1 })),
+    decrement: () => set((state) => ({ count: state.count - 1 })),
+    increment2: () => {
+      set((state) => ({ dos: { count: state.dos.count + 1 } }));
+    },
+    // set(
+    //   produce((state) => {
+    //     state.count += 1;
+    //     state.dos.count += 1;
+
+    //   })
+    // ),
+    decrement2: () => {
+      const prevCount = get().count;
+      // decrement uno
+      set((state) => ({ count: state.count - 1 }));
+
+      const newCount = get().count;
+
+      console.warn('newCount', newCount, 'prevCount', prevCount);
+      // decrement dos pretend this is some async action
+      setTimeout(() => {
+        set(
+          produce((state) => {
+            // state.count -= 1;
+            state.dos.count -= 1;
+          })
+        );
+      });
+    },
+    setNotes: (notes) => set({ notes }),
+  },
 }));
 
 //#region selectors
 
 export function getNotes(state: RenderStoreState) {
   return state.notes;
+}
+
+export function setNotes(notes: string) {
+  useRenderStore.setState({ notes });
 }
 
 //#endregion selectors
