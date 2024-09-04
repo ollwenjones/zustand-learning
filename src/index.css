@@ -11,3 +11,30 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.animate--on {
+  animation: fadeOn 0.25s ease-out;
+}
+
+.animate--off {
+  animation: fadeOut 0.25s ease-out;
+}
+
+@keyframes fadeOut {
+  from {
+    background-color: rgb(255, 210, 127);
+  }
+  to {
+    background-color: white;
+  }
+}
+
+@keyframes fadeOn {
+  from {
+    background-color: rgb(127, 172, 255);
+    /* background-color: rgb(255, 210, 127); */
+  }
+  to {
+    background-color: white;
+  }
+}
